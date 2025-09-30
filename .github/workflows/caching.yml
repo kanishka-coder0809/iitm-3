@@ -2,7 +2,7 @@ name: CI with Caching
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -10,25 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout your repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Setup uv (your tool)
       - name: Set up uv
         uses: astral-sh/setup-uv@v5
-      
+
+      # Create virtual environment
       - name: Create virtual environment
         run: uv venv
 
+      # Cache uv dependencies
       - name: Cache uv dependencies
+        id: cache-uv
         uses: actions/cache@v4
-        id: cache-uv # Give the step an id to check its output
         with:
           path: ~/.cache/uv
           key: cache-68e45b9
 
+      # Install dependencies
       - name: Install dependencies
         run: uv pip install -r requirements.txt
 
+      # Prime cache step
       - name: prime-cache-68e45b9
         run: |
           if [[ "${{ steps.cache-uv.outputs.cache-hit }}" == "true" ]]; then
